@@ -14,7 +14,7 @@ BOT_TOKEN = "8361339789:AAFAGs8zQ6OOa0LLW1pYJhBunvTvo_xAo"  # твой токе�
 CHAT_ID = 384327027  # твой Telegram ID
 
 # === ИНИЦИАЛИЗАЦИЯ БОТА ===
-client = TelegramClient("monitor_session", api_id, api_hash)
+client = TelegramClient('bot', api_id, api_hash).start(bot_token=bot_token)
 
 async def send_alert(message_text):
     """Отправка уведомления в Telegram"""
@@ -51,4 +51,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
