@@ -1,47 +1,44 @@
+from telethon import TelegramClient, events
 import asyncio
 import os
 import requests
-from telethon import TelegramClient, events
 from aiohttp import web
 
-# === ТВОИ ДАННЫЕ ===
-api_id = 26625063 # твой API ID
-api_hash = "6be823ff7fb233d828259c3320b9c679"  # твой API hash
-channel_username = "hy_i_dnepr"  # канал, который бот слушает
-keywords = ["ракета на Дніпро", "прилёт", "Червоний", "негайно в укриття", "вибух"]  # ключевые слова
+api_id = 26620563
+api_hash = "6be823fef2b233d828259c332d09c9679"
+channel_username = "hy_i_dnepr"
+keywords = ["ракета на Дніпро", "Червоний", "негайно в укриття", "вибух"]
 
-BOT_TOKEN = "8361339789:AAFAGs8zQ6OOa0LLW1pYJhBunvTvo_xAo"  # токен бота
-CHAT_ID = 384327027  # твой Telegram ID
+BOT_TOKEN = "8361339789:AAFAGs8zQ6OOa0LLW1pYJhBunvTvo_xAo"
+CHAT_ID = 384327027
 
-# === ИНИЦИАЛИЗАЦИЯ TELETHON-КЛИЕНТА ===
-client = TelegramClient('bot', api_id, api_hash)
+# === создаём клиента без авторизации ===
+client = TelegramClient("bot", api_id, api_hash)
 
-async def send_alert(message_text):
-    """Отправка уведомления в Telegram"""
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    data = {"chat_id": CHAT_ID, "text": f"⚠️ Найдено сообщение с ключевым словом:\n\n{message_text}"}
-    requests.post(url, data=data)
-
-@client.on(events.NewMessage(chats=channel_username))
-async def handler(event):
-    """Обработка новых сообщений"""
-    text = event.message.message.lower()
-    if any(keyword.lower() in text for keyword in keywords):
-        await send_alert(event.message.message)
-
-# === ЗАПУСК TELETHON И ВЕБ-СЕРВЕРА ===
-async def start_bot():
-    print("✅ Бот запущен и слушает канал...")
+async def main():
+    print("✅ Запуск бота...")
     await client.start(bot_token=BOT_TOKEN)
-    await client.run_until_disconnected()
+    print("✅ Авторизация прошла успешно!")
 
-async def web_server():
-    """Простой веб-сервер для Render (чтобы не завершал процесс)"""
-    async def handle(request):
-        return web.Response(text="✅ Бот работает 24/7 на Render.")
-    app = web.Application()
-    app.router.add_get("/", handle)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", int(os.environ.g
+    @client.on(events.NewMessage(chats=channel_username))
+    async def handler(event):
+        text = event.message.message.lower()
+        if any(keyword.lower() in text for keyword in keywords):
+            url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+            data = {"chat_id": CHAT_ID, "text": f"⚠️ Найдено сообщение:\n\n{event.message.message}"}
+            requests.post(url, data=data)
 
+    async def web_server():
+        async def handle(request):
+            return web.Response(text="✅ Бот работает 24/7 на Render.")
+        app = web.Application()
+        app.router.add_get("/", handle)
+        runner = web.AppRunner(app)
+        await runner.setup()
+        site = web.TCPSite(runner, "0.0.0.0", int(os.environ.get("PORT", 10000)))
+        await site.start()
+
+    await asyncio.gather(client.run_until_disconnected(), web_server())
+
+if __name__ == "__main__":
+    asyncio.run(main())
