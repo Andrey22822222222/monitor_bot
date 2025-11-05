@@ -5,8 +5,8 @@ from telethon import TelegramClient, events
 from aiohttp import web
 
 # === ТВОИ ДАННЫЕ ===
-api_id = 26620563  # твой API ID
-api_hash = "6be823fef2b233d828259c332d09c9679"  # твой API hash
+api_id = 26625063 # твой API ID
+api_hash = "6be823ff7fb233d828259c3320b9c679"  # твой API hash
 channel_username = "hy_i_dnepr"  # канал, который бот слушает
 keywords = ["ракета на Дніпро", "прилёт", "Червоний", "негайно в укриття", "вибух"]  # ключевые слова
 
@@ -44,3 +44,4 @@ async def web_server():
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, "0.0.0.0", int(os.environ.g
+
