@@ -29,16 +29,23 @@ async def main():
             requests.post(url, data=data)
 
     async def web_server():
-        async def handle(request):
-            return web.Response(text="✅ Бот работает 24/7 на Render.")
-        app = web.Application()
-        app.router.add_get("/", handle)
-        runner = web.AppRunner(app)
-        await runner.setup()
-        site = web.TCPSite(runner, "0.0.0.0", int(os.environ.get("PORT", 10000)))
-        await site.start()
+    async def handle(request):
+        return web.Response(text="✅ Бот работает 24/7 на Render.")
+    app = web.Application()
+    app.router.add_get("/", handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", int(os.environ.get("PORT", 10000)))
+    await site.start()
 
-    await asyncio.gather(client.run_until_disconnected(), web_server())
+async def main():
+    # здесь объединяем задачи
+    await asyncio.gather(
+        client.run_until_disconnected(),
+        web_server()
+    )
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
