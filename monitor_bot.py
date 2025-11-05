@@ -4,6 +4,7 @@ import os
 import requests
 from aiohttp import web
 
+# === ТВОИ ДАННЫЕ ===
 api_id = 26620563
 api_hash = "6be823fef2b233d828259c332d09c9679"
 channel_username = "hy_i_dnepr"
@@ -12,10 +13,10 @@ keywords = ["ракета на Дніпро", "Червоний", "негайн�
 BOT_TOKEN = "8361339789:AAFAGs8zQ6OOa0LLW1pYJhBunvTvo_xAo"
 CHAT_ID = 384327027
 
-# === создаём клиента без авторизации ===
+# === создаём клиента ===
 client = TelegramClient("bot", api_id, api_hash)
 
-async def main():
+async def start_bot():
     print("✅ Запуск бота...")
     await client.start(bot_token=BOT_TOKEN)
     print("✅ Авторизация прошла успешно!")
@@ -28,7 +29,9 @@ async def main():
             data = {"chat_id": CHAT_ID, "text": f"⚠️ Найдено сообщение:\n\n{event.message.message}"}
             requests.post(url, data=data)
 
-    async def web_server():
+    await client.run_until_disconnected()
+
+async def web_server():
     async def handle(request):
         return web.Response(text="✅ Бот работает 24/7 на Render.")
     app = web.Application()
@@ -39,13 +42,10 @@ async def main():
     await site.start()
 
 async def main():
-    # здесь объединяем задачи
     await asyncio.gather(
-        client.run_until_disconnected(),
+        start_bot(),
         web_server()
     )
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
