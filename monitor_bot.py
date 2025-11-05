@@ -10,11 +10,11 @@ api_hash = "6be823fef2b233d828259c332d09c9679"  # твой API hash
 channel_username = "hy_i_dnepr"  # канал, который бот слушает
 keywords = ["ракета на Дніпро", "прилёт", "Червоний", "негайно в укриття", "вибух"]  # ключевые слова
 
-BOT_TOKEN = "8361339789:AAFAGs8zQ6OOa0LLW1pYJhBunvTvo_xAo"  # твой токен бота
+BOT_TOKEN = "8361339789:AAFAGs8zQ6OOa0LLW1pYJhBunvTvo_xAo"  # токен бота
 CHAT_ID = 384327027  # твой Telegram ID
 
-# === ИНИЦИАЛИЗАЦИЯ БОТА ===
-client = TelegramClient('bot', api_id, api_hash).start(bot_token=BOT_TOKEN)
+# === ИНИЦИАЛИЗАЦИЯ TELETHON-КЛИЕНТА ===
+client = TelegramClient('bot', api_id, api_hash)
 
 async def send_alert(message_text):
     """Отправка уведомления в Telegram"""
@@ -32,7 +32,7 @@ async def handler(event):
 # === ЗАПУСК TELETHON И ВЕБ-СЕРВЕРА ===
 async def start_bot():
     print("✅ Бот запущен и слушает канал...")
-    await client.start()
+    await client.start(bot_token=BOT_TOKEN)
     await client.run_until_disconnected()
 
 async def web_server():
@@ -43,14 +43,4 @@ async def web_server():
     app.router.add_get("/", handle)
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", int(os.environ.get("PORT", 10000)))
-    await site.start()
-
-async def main():
-    await asyncio.gather(start_bot(), web_server())
-
-if __name__ == "__main__":
-    asyncio.run(main())
-
-
-
+    site = web.TCPSite(runner, "0.0.0.0", int(os.environ.g
